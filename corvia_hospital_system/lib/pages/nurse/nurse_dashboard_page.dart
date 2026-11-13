@@ -237,7 +237,7 @@ class _NurseDashboardPageState extends State<NurseDashboardPage> {
       _NurseSection.shifts => NurseShiftPage(key: key, service: _service, showAppBar: false),
       _NurseSection.patients => NurseAssignedPatientsPage(key: key, service: _service, showAppBar: false),
       _NurseSection.observations => NurseObservationsPage(key: key, service: _service, showAppBar: false),
-      _NurseSection.vitalSigns => VitalSignsSimulatorPage(key: key, showAppBar: false),
+      _NurseSection.vitalSigns => VitalSignsSimulatorPage(key: key, showAppBar: true),
       _NurseSection.specimens => NurseLabCollectionPage(key: key, service: _service, showAppBar: false),
       _NurseSection.tasks => NurseTasksPage(key: key, service: _service, showAppBar: false),
       _NurseSection.medications => NurseMedicationRoundsPage(key: key, service: _service, showAppBar: false),
