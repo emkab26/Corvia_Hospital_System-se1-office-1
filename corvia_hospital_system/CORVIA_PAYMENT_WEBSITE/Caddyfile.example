@@ -1,0 +1,11 @@
+# Replace pay.example.co.za with the real public payment domain.
+# Point that domain's DNS A/AAAA record to this server before starting Caddy.
+pay.example.co.za {
+	encode zstd gzip
+
+	reverse_proxy 127.0.0.1:8080 {
+		# The Node app uses this for PayFast source-IP validation.
+		# Do not expose port 8080 publicly.
+		header_up X-Real-IP {remote_host}
+	}
+}

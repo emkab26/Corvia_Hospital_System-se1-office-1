@@ -1,0 +1,17 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  # Exclude git worktrees — each carries its own pubspec and spawns a separate
+  # analysis context that resolves stale dependency versions.
+  exclude:
+    - .claude/**
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
+
+linter:
+  rules:

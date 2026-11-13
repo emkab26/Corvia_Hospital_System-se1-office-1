@@ -1,0 +1,28 @@
+name: CI
+on:
+  push:
+    branches: [Testing, 'feature/jandre-ws4-*']
+  pull_request:
+    branches: [Testing]
+
+jobs:
+  analyze-test:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/cirruslabs/flutter:3.44.1
+    steps:
+      - uses: actions/checkout@v4
+      - run: flutter pub get
+      - run: flutter analyze --no-fatal-infos --no-fatal-warnings
+      - run: flutter test
+      - run: flutter build web --release --dart-define=CORVIA_ENV=local --dart-define=SUPABASE_ANON_KEY=synthetic-build-only
+
+  build-apk:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/cirruslabs/flutter:3.44.1
+    steps:
+      - uses: actions/checkout@v4
+      - run: flutter pub get
+      # Compilation check only; synthetic configuration cannot access a backend.
+      - run: flutter build apk --debug --dart-define=CORVIA_ENV=local --dart-define=SUPABASE_URL=http://10.0.2.2:54321 --dart-define=SUPABASE_ANON_KEY=synthetic-build-only

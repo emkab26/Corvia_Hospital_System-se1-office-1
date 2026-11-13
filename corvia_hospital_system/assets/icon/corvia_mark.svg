@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1254 1254" role="img" aria-label="Corvia">
+  <defs>
+    <linearGradient id="corvia-arc" x1="160" y1="640" x2="1010" y2="640" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#08B9AE"/>
+      <stop offset="0.55" stop-color="#0A6E92"/>
+      <stop offset="1" stop-color="#062B5C"/>
+    </linearGradient>
+    <linearGradient id="corvia-cross" x1="380" y1="420" x2="1110" y2="960" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#05C7B9"/>
+      <stop offset="0.45" stop-color="#0A7DB1"/>
+      <stop offset="1" stop-color="#28318F"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- The C -->
+    <path d="M997 318 A470 470 0 1 0 995 972" stroke="url(#corvia-arc)" stroke-width="56"/>
+    <!-- Cross outline whose right arm flows into the loop -->
+    <path d="M552 588 V456 Q552 411 598 411 H700 Q746 411 746 456 V602
+             M746 602 C820 560 880 553 965 553 C1060 553 1100 620 1100 680
+             C1100 745 1045 800 972 800 H770 Q746 800 746 826 V914
+             Q746 958 700 958 H598 Q552 958 552 914 V826 Q552 800 528 800
+             H430 Q396 800 396 766 V718 Q396 688 430 688 H520
+             C610 688 690 680 746 652"
+          stroke="url(#corvia-cross)" stroke-width="48"/>
+    <!-- Wave sweeping from the C into the cross -->
+    <path d="M552 588 C480 588 430 553 368 553 C255 553 186 640 186 720
+             C186 790 220 860 270 930"
+          stroke="url(#corvia-cross)" stroke-width="56"/>
+  </g>
+</svg>

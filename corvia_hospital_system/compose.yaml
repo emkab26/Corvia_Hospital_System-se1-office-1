@@ -1,0 +1,17 @@
+services:
+  corvia-web:
+    build:
+      context: .
+      args:
+        CORVIA_ENV: ${CORVIA_ENV:?Choose local, testing or live}
+        CORVIA_EXPECTED_BACKEND_ORIGIN: ${CORVIA_EXPECTED_BACKEND_ORIGIN:-}
+        SUPABASE_URL: ${SUPABASE_URL:?SUPABASE_URL is required in .env}
+        SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:?SUPABASE_ANON_KEY is required in .env}
+        OAUTH_REDIRECT_URL: ${OAUTH_REDIRECT_URL:-https://app.example.com/login-callback}
+        CORVIA_EMERGENCY_DISPATCH_ENABLED: ${CORVIA_EMERGENCY_DISPATCH_ENABLED:-false}
+        CORVIA_WS4_TEAM_EMS_HANDOFF_ENABLED: ${CORVIA_WS4_TEAM_EMS_HANDOFF_ENABLED:-false}
+    image: corvia-web:latest
+    container_name: corvia-web
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:80"

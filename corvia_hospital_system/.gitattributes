@@ -1,0 +1,51 @@
+# Store all text files as LF; check out native on each platform.
+# Eliminates phantom CRLF-only diffs across Windows/macOS/Linux contributors.
+* text=auto eol=lf
+
+# Windows tooling requires CRLF.
+*.bat        text eol=crlf
+*.cmd        text eol=crlf
+*.ps1        text eol=crlf
+*.sln        text eol=crlf
+*.vcxproj    text eol=crlf
+
+# Shell scripts and Gradle wrappers must be LF to remain executable.
+*.sh         text eol=lf
+gradlew      text eol=lf
+
+# Force LF on generated plugin registrants so flutter pub get doesn't
+# reintroduce line-ending churn after every Windows checkout.
+**/flutter/generated_plugin_registrant.cc  text eol=lf
+**/flutter/generated_plugin_registrant.h   text eol=lf
+**/flutter/generated_plugins.cmake         text eol=lf
+**/Flutter/GeneratedPluginRegistrant.swift text eol=lf
+**/Flutter/GeneratedPluginRegistrant.m     text eol=lf
+**/Flutter/GeneratedPluginRegistrant.h     text eol=lf
+
+pubspec.lock text eol=lf
+
+*.png      binary
+*.jpg      binary
+*.jpeg     binary
+*.gif      binary
+*.webp     binary
+*.ico      binary
+*.svg      text eol=lf
+*.ttf      binary
+*.otf      binary
+*.woff     binary
+*.woff2    binary
+*.eot      binary
+*.pdf      binary
+*.jar      binary
+*.keystore binary
+*.jks      binary
+*.p12      binary
+*.mp3      binary
+*.mp4      binary
+*.wav      binary
+
+pubspec.lock                               linguist-generated=true
+**/flutter/generated_plugin_registrant.cc  linguist-generated=true
+**/flutter/generated_plugins.cmake         linguist-generated=true
+**/Flutter/GeneratedPluginRegistrant.swift linguist-generated=true

@@ -1,0 +1,376 @@
+{
+  "source_sha256": "88d95114fb7c06a6b4fb2d525d299f6713fe4513be8053e3df63c6c189f852d5",
+  "records": [
+    {
+      "record": 1042,
+      "section": "05_ws4_column",
+      "object": "public.profiles.user_id"
+    },
+    {
+      "record": 1033,
+      "section": "05_ws4_column",
+      "object": "public.profiles.id_number"
+    },
+    {
+      "record": 1031,
+      "section": "05_ws4_column",
+      "object": "public.profiles.first_name"
+    },
+    {
+      "record": 1040,
+      "section": "05_ws4_column",
+      "object": "public.profiles.surname"
+    },
+    {
+      "record": 1030,
+      "section": "05_ws4_column",
+      "object": "public.profiles.email"
+    },
+    {
+      "record": 1026,
+      "section": "05_ws4_column",
+      "object": "public.profiles.address"
+    },
+    {
+      "record": 1028,
+      "section": "05_ws4_column",
+      "object": "public.profiles.created_at"
+    },
+    {
+      "record": 1036,
+      "section": "05_ws4_column",
+      "object": "public.profiles.phone_number"
+    },
+    {
+      "record": 1038,
+      "section": "05_ws4_column",
+      "object": "public.profiles.profile_picture_url"
+    },
+    {
+      "record": 1041,
+      "section": "05_ws4_column",
+      "object": "public.profiles.updated_at"
+    },
+    {
+      "record": 1043,
+      "section": "05_ws4_column",
+      "object": "public.profiles.user_type"
+    },
+    {
+      "record": 1029,
+      "section": "05_ws4_column",
+      "object": "public.profiles.date_of_birth"
+    },
+    {
+      "record": 1032,
+      "section": "05_ws4_column",
+      "object": "public.profiles.id"
+    },
+    {
+      "record": 1035,
+      "section": "05_ws4_column",
+      "object": "public.profiles.phone"
+    },
+    {
+      "record": 1039,
+      "section": "05_ws4_column",
+      "object": "public.profiles.role"
+    },
+    {
+      "record": 1027,
+      "section": "05_ws4_column",
+      "object": "public.profiles.avatar_url"
+    },
+    {
+      "record": 1034,
+      "section": "05_ws4_column",
+      "object": "public.profiles.is_active"
+    },
+    {
+      "record": 1037,
+      "section": "05_ws4_column",
+      "object": "public.profiles.profile_complete"
+    },
+    {
+      "record": 1719,
+      "section": "07_constraint",
+      "object": "public.profiles.profiles_email_key"
+    },
+    {
+      "record": 1720,
+      "section": "07_constraint",
+      "object": "public.profiles.profiles_id_number_key"
+    },
+    {
+      "record": 1721,
+      "section": "07_constraint",
+      "object": "public.profiles.profiles_pkey"
+    },
+    {
+      "record": 1722,
+      "section": "07_constraint",
+      "object": "public.profiles.profiles_role_check"
+    },
+    {
+      "record": 1723,
+      "section": "07_constraint",
+      "object": "public.profiles.profiles_user_id_fkey"
+    },
+    {
+      "record": 1724,
+      "section": "07_constraint",
+      "object": "public.profiles.profiles_user_type_check"
+    },
+    {
+      "record": 2129,
+      "section": "08_index",
+      "object": "public.idx_profiles_user_id"
+    },
+    {
+      "record": 2301,
+      "section": "08_index",
+      "object": "public.profiles_email_key"
+    },
+    {
+      "record": 2302,
+      "section": "08_index",
+      "object": "public.profiles_id_number_key"
+    },
+    {
+      "record": 2303,
+      "section": "08_index",
+      "object": "public.profiles_id_unique_idx"
+    },
+    {
+      "record": 2304,
+      "section": "08_index",
+      "object": "public.profiles_pkey"
+    },
+    {
+      "record": 2305,
+      "section": "08_index",
+      "object": "public.profiles_role_idx"
+    },
+    {
+      "record": 2306,
+      "section": "08_index",
+      "object": "public.profiles_user_id_idx"
+    },
+    {
+      "record": 2307,
+      "section": "08_index",
+      "object": "public.profiles_user_id_unique_idx"
+    },
+    {
+      "record": 915,
+      "section": "04_relation_security",
+      "object": "public.profiles"
+    },
+    {
+      "record": 1020,
+      "section": "05_ws4_column",
+      "object": "public.incidents.id"
+    },
+    {
+      "record": 1025,
+      "section": "05_ws4_column",
+      "object": "public.incidents.user_id"
+    },
+    {
+      "record": 1022,
+      "section": "05_ws4_column",
+      "object": "public.incidents.latitude"
+    },
+    {
+      "record": 1023,
+      "section": "05_ws4_column",
+      "object": "public.incidents.longitude"
+    },
+    {
+      "record": 1024,
+      "section": "05_ws4_column",
+      "object": "public.incidents.status"
+    },
+    {
+      "record": 1019,
+      "section": "05_ws4_column",
+      "object": "public.incidents.created_at"
+    },
+    {
+      "record": 1021,
+      "section": "05_ws4_column",
+      "object": "public.incidents.last_viewed_at"
+    },
+    {
+      "record": 1018,
+      "section": "05_ws4_column",
+      "object": "public.incidents.assigned_dispatcher_user_id"
+    },
+    {
+      "record": 1017,
+      "section": "05_ws4_column",
+      "object": "public.incidents.accepted_at"
+    },
+    {
+      "record": 1480,
+      "section": "07_constraint",
+      "object": "public.incidents.incidents_assigned_dispatcher_user_id_fkey"
+    },
+    {
+      "record": 1481,
+      "section": "07_constraint",
+      "object": "public.incidents.incidents_pkey"
+    },
+    {
+      "record": 1482,
+      "section": "07_constraint",
+      "object": "public.incidents.incidents_user_id_fkey"
+    },
+    {
+      "record": 2158,
+      "section": "08_index",
+      "object": "public.incidents_assigned_dispatcher_status_idx"
+    },
+    {
+      "record": 2159,
+      "section": "08_index",
+      "object": "public.incidents_pkey"
+    },
+    {
+      "record": 876,
+      "section": "04_relation_security",
+      "object": "public.incidents"
+    },
+    {
+      "record": 3,
+      "section": "01_function",
+      "object": "public.block_user_type_change()"
+    },
+    {
+      "record": 374,
+      "section": "01_function",
+      "object": "public.set_updated_at()"
+    },
+    {
+      "record": 343,
+      "section": "01_function",
+      "object": "public.is_admin()"
+    },
+    {
+      "record": 165,
+      "section": "01_function",
+      "object": "public.corvia_lab_admin_disable_worker()"
+    },
+    {
+      "record": 160,
+      "section": "01_function",
+      "object": "public.corvia_is_dispatch_operator()"
+    },
+    {
+      "record": 300,
+      "section": "01_function",
+      "object": "public.corvia_protect_incident_dispatch_assignment()"
+    },
+    {
+      "record": 90,
+      "section": "01_function",
+      "object": "public.corvia_dispatch_accept_incident(p_incident_id bigint)"
+    },
+    {
+      "record": 438,
+      "section": "02_trigger",
+      "object": "public.incidents.protect_incident_dispatch_assignment"
+    },
+    {
+      "record": 439,
+      "section": "02_trigger",
+      "object": "public.incidents.protect_incident_dispatch_assignment_on_insert"
+    },
+    {
+      "record": 478,
+      "section": "02_trigger",
+      "object": "public.profiles.corvia_lab_admin_disable_worker"
+    },
+    {
+      "record": 479,
+      "section": "02_trigger",
+      "object": "public.profiles.profiles_block_user_type_change"
+    },
+    {
+      "record": 480,
+      "section": "02_trigger",
+      "object": "public.profiles.set_profiles_updated_at"
+    },
+    {
+      "record": 637,
+      "section": "03_policy",
+      "object": "public.incidents.corvia_dispatch_read_incidents"
+    },
+    {
+      "record": 638,
+      "section": "03_policy",
+      "object": "public.incidents.corvia_patient_insert_own_incident"
+    },
+    {
+      "record": 639,
+      "section": "03_policy",
+      "object": "public.incidents.corvia_patient_read_own_incident"
+    },
+    {
+      "record": 640,
+      "section": "03_policy",
+      "object": "public.incidents.corvia_patient_update_own_incident"
+    },
+    {
+      "record": 641,
+      "section": "03_policy",
+      "object": "public.incidents.incidents_insert"
+    },
+    {
+      "record": 642,
+      "section": "03_policy",
+      "object": "public.incidents.incidents_select"
+    },
+    {
+      "record": 643,
+      "section": "03_policy",
+      "object": "public.incidents.incidents_update"
+    },
+    {
+      "record": 767,
+      "section": "03_policy",
+      "object": "public.profiles.\"Users read own base profile\""
+    },
+    {
+      "record": 768,
+      "section": "03_policy",
+      "object": "public.profiles.\"Users update own base profile\""
+    },
+    {
+      "record": 769,
+      "section": "03_policy",
+      "object": "public.profiles.profiles_insert_own"
+    },
+    {
+      "record": 770,
+      "section": "03_policy",
+      "object": "public.profiles.profiles_select_own"
+    },
+    {
+      "record": 771,
+      "section": "03_policy",
+      "object": "public.profiles.profiles_update_own"
+    }
+  ],
+  "omitted_permissive_profile_select_policies": [
+    "Doctors can view linked patient profiles",
+    "Hospital admins can view patient profiles in their hospital",
+    "Pharmacists read dispensing patient profiles"
+  ],
+  "boundaries": [
+    "auth.users and auth.uid are synthetic identity substitutes",
+    "lab_worker_accounts is a trigger dependency stub; no lab verification",
+    "only profiles/incidents contract objects reconstructed; not Auth/API/Realtime",
+    "no deployment or full database backup; includes known unsafe permissions"
+  ]
+}

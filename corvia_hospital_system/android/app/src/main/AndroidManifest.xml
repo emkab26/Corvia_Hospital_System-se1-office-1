@@ -1,0 +1,229 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ============================================================= -->
+    <!-- CORE -->
+    <!-- ============================================================= -->
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Network -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- ============================================================= -->
+    <!-- CAMERA / QR -->
+    <!-- ============================================================= -->
+
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <!-- ============================================================= -->
+    <!-- LOCATION -->
+    <!-- ============================================================= -->
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- ============================================================= -->
+    <!-- MICROPHONE / WEBRTC -->
+    <!-- ============================================================= -->
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+    <!-- ============================================================= -->
+    <!-- BIOMETRICS -->
+    <!-- ============================================================= -->
+
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+
+    <!-- ============================================================= -->
+    <!-- HEALTH CONNECT -->
+    <!-- ============================================================= -->
+
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
+    <uses-permission android:name="android.permission.health.READ_STEPS" />
+    <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED" />
+    <uses-permission android:name="android.permission.health.READ_OXYGEN_SATURATION" />
+    <uses-permission android:name="android.permission.health.READ_SLEEP" />
+
+    <!-- Pre Android 14 fallback -->
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+
+    <!-- ============================================================= -->
+    <!-- NOTIFICATIONS / MEDICATION REMINDERS -->
+    <!-- ============================================================= -->
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- ============================================================= -->
+    <!-- APPLICATION -->
+    <!-- ============================================================= -->
+
+    <application
+        android:label="Corvia"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
+
+        <!-- ========================================================= -->
+        <!-- MAIN ACTIVITY -->
+        <!-- ========================================================= -->
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+
+            <!-- ===================================================== -->
+            <!-- FLUTTER NORMAL THEME -->
+            <!-- ===================================================== -->
+
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
+
+            <!-- ===================================================== -->
+            <!-- IMPORTANT AUTH / DEEP LINK FIX -->
+            <!-- ===================================================== -->
+            <!--
+                Supabase Flutter already handles authentication links
+                using its deep-link/app-links integration.
+
+                Flutter's own automatic deep-link navigation is disabled
+                here so that the same callback is not processed twice.
+
+                This helps prevent duplicate Navigator creation /
+                GlobalKey<NavigatorState> errors when Corvia is reopened
+                by an auth callback.
+            -->
+
+            <meta-data
+                android:name="flutter_deeplinking_enabled"
+                android:value="false" />
+
+            <!-- ===================================================== -->
+            <!-- NORMAL APP LAUNCH -->
+            <!-- ===================================================== -->
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- ===================================================== -->
+            <!-- CORVIA / SUPABASE AUTH DEEP LINK -->
+            <!-- ===================================================== -->
+            <!--
+                Current Corvia callback:
+
+                mycorvia://login-callback
+
+                Used for:
+                - Email confirmation
+                - Password recovery
+                - OAuth / Google login return
+            -->
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="mycorvia"
+                    android:host="login-callback" />
+            </intent-filter>
+
+            <!-- ===================================================== -->
+            <!-- HEALTH CONNECT PERMISSION RATIONALE -->
+            <!-- Android 13 -->
+            <!-- ===================================================== -->
+
+            <intent-filter>
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+            </intent-filter>
+
+        </activity>
+
+        <!-- ========================================================= -->
+        <!-- HEALTH CONNECT PERMISSION RATIONALE -->
+        <!-- Android 14+ -->
+        <!-- ========================================================= -->
+
+        <activity-alias
+            android:name="ViewPermissionUsageActivity"
+            android:exported="true"
+            android:targetActivity=".MainActivity"
+            android:permission="android.permission.START_VIEW_PERMISSION_USAGE">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+
+                <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
+            </intent-filter>
+
+        </activity-alias>
+
+        <!-- ========================================================= -->
+        <!-- FLUTTER EMBEDDING -->
+        <!-- ========================================================= -->
+
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+
+        <!-- ========================================================= -->
+        <!-- LOCAL NOTIFICATIONS -->
+        <!-- ========================================================= -->
+
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
+            android:exported="false">
+
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+
+        </receiver>
+
+    </application>
+
+    <!-- ============================================================= -->
+    <!-- PACKAGE / INTENT QUERIES -->
+    <!-- ============================================================= -->
+
+    <queries>
+
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+
+            <data android:mimeType="text/plain" />
+        </intent>
+
+        <!-- Health Connect -->
+        <package android:name="com.google.android.apps.healthdata" />
+
+    </queries>
+
+</manifest>

@@ -1,0 +1,12 @@
+.git
+.dart_tool
+build
+windows
+linux
+macos
+android
+ios
+test
+integration_test
+*.log
+.env

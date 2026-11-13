@@ -1,0 +1,497 @@
+--- a/lib/pages/hospital/hospital_admin_shell.dart
++++ b/lib/pages/hospital/hospital_admin_shell.dart
+@@ -26,7 +26,6 @@
+ import 'hospital_reports_page.dart';
+ import 'hospital_settings_page.dart';
+ import 'hospital_staff_accounts_page.dart';
+-import 'package:mycorvia/pages/patient/widgets/fleet_management_page.dart';
+
+ enum HospitalAdminSection {
+   dashboard,
+@@ -264,7 +263,8 @@
+         return const HospitalSettingsPage();
+
+       case HospitalAdminSection.fleetManagement:
+-        return const FleetManagementPage();
++        // Legacy entry stays safe, but no longer opens sample preview data.
++        return const HospitalFleetParamedicPage();
+     }
+   }
+
+@@ -606,7 +606,7 @@
+         return 'Link existing Corvia accounts to staff roles at this hospital.';
+
+       case HospitalAdminSection.fleetManagement:
+-        return 'Preview sample vehicles. Changes do not affect emergency dispatch.';
++        return 'Manage authorised hospital Fleet vehicles and crews.';
+
+       default:
+         return 'You are currently viewing $_pageTitle.';
+@@ -746,11 +746,6 @@
+         section: HospitalAdminSection.settings,
+         icon: Icons.settings_rounded,
+         label: 'Settings',
+-      ),
+-      const _HospitalMenuItem(
+-        section: HospitalAdminSection.fleetManagement,
+-        icon: Icons.directions_car_rounded,
+-        label: 'Fleet preview',
+       ),
+     ];
+
+--- a/lib/pages/paramedic/paramedic_workspace_page.dart
++++ b/lib/pages/paramedic/paramedic_workspace_page.dart
+@@ -4,6 +4,7 @@
+ import 'paramedic_forms.dart';
+ import 'paramedic_incident_page.dart';
+ import 'paramedic_operations_panel.dart';
++import 'fleet_live_unit_card.dart';
+
+ class ParamedicWorkspacePage extends StatefulWidget {
+   const ParamedicWorkspacePage(
+@@ -35,6 +36,7 @@
+   int tab = 0;
+   bool initialSectionApplied = false;
+   bool initialIncidentOpened = false;
++  FleetUnitFilter vehicleFilter = FleetUnitFilter.all;
+   bool get admin => data['is_admin'] == true;
+   bool get dispatch => admin || data['can_dispatch'] == true;
+   @override
+@@ -120,7 +122,7 @@
+       if (!mounted || generation != _readGeneration) return;
+       data = next;
+       if (!initialSectionApplied) {
+-        tab = admin && widget.initialSection == 'Vehicles' ? 1 : 0;
++        tab = admin && widget.initialSection != 'Vehicles' ? 3 : 0;
+         initialSectionApplied = true;
+       }
+       locked = false;
+@@ -234,57 +236,109 @@
+                     trailing: Chip(label: Text('${r['status']}')),
+                     onTap: () => _incident(r)))),
+       ]);
+-  Widget _units() =>
+-      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+-        button(
+-            'Add vehicle',
+-            () => form('unit', 'Add vehicle', initial: const {
+-                  'vehicle_type': 'Ambulance',
+-                  'response_capability': 'BLS'
+-                })),
+-        cards(
+-            rows('units_actual'),
+-            (r) => Card(
+-                child: Padding(
+-                    padding: const EdgeInsets.all(12),
+-                    child: Column(
+-                        crossAxisAlignment: CrossAxisAlignment.start,
+-                        children: [
+-                          Text(
+-                              '${r['unit_number']} • ${r['registration_number'] ?? 'No registration'}',
+-                              style: Theme.of(context).textTheme.titleMedium),
+-                          Text(
+-                              '${r['vehicle_type']} • ${r['base_location'] ?? 'No base'}'),
+-                          Text('${r['status']} • ${r['readiness_status']}'),
+-                          Wrap(spacing: 8, children: [
+-                            TextButton(
+-                                onPressed: () => form('unit', 'Edit vehicle',
+-                                    initial: r, extra: {'id': r['unit_id']}),
+-                                child: const Text('Edit details')),
+-                            TextButton(
+-                                onPressed: () => form(
+-                                        'unit_status', 'Vehicle readiness',
+-                                        extra: {
+-                                          'unit_id': r['unit_id'],
+-                                          'unit_revision':
+-                                              r['availability_revision']
+-                                        },
+-                                        fields: [
+-                                          EmsField('status', 'Readiness',
+-                                              required: true,
+-                                              options: choices([
+-                                                'ready',
+-                                                'idle',
+-                                                'maintenance',
+-                                                'off_duty'
+-                                              ])),
+-                                          const EmsField('reason', 'Reason',
+-                                              required: true, max: 1000)
+-                                        ]),
+-                                child: const Text('Change readiness'))
+-                          ]),
+-                        ]))))
+-      ]);
++  Widget _units() {
++    final allUnits = rows('units_actual');
++    final visibleUnits = vehicleFilter == FleetUnitFilter.all
++        ? allUnits
++        : allUnits.where((u) => classifyFleetUnit(u) == vehicleFilter).toList();
++
++    return Column(
++      crossAxisAlignment: CrossAxisAlignment.start,
++      children: [
++        Wrap(
++          spacing: 12,
++          runSpacing: 8,
++          crossAxisAlignment: WrapCrossAlignment.center,
++          children: [
++            Text(
++              'Hospital vehicles',
++              style: Theme.of(context).textTheme.titleLarge,
++            ),
++            button(
++              'Add vehicle',
++              () => form('unit', 'Add vehicle', initial: const {
++                'vehicle_type': 'Ambulance',
++                'response_capability': 'BLS'
++              }),
++            ),
++          ],
++        ),
++        const SizedBox(height: 8),
++        Text(
++          'Authorised hospital Fleet records. Refresh for the latest backend state. '
++          'A listed vehicle is not automatically available for emergency dispatch.',
++          style: Theme.of(context).textTheme.bodySmall,
++        ),
++        const SizedBox(height: 12),
++        SingleChildScrollView(
++          scrollDirection: Axis.horizontal,
++          child: Row(
++            children: [
++              for (final filter in FleetUnitFilter.values)
++                Padding(
++                  padding: const EdgeInsets.only(right: 8),
++                  child: ChoiceChip(
++                    label: Text(filter.label),
++                    selected: vehicleFilter == filter,
++                    onSelected: (_) => setState(() => vehicleFilter = filter),
++                  ),
++                ),
++            ],
++          ),
++        ),
++        const SizedBox(height: 12),
++        if (visibleUnits.isEmpty)
++          Padding(
++            padding: const EdgeInsets.all(24),
++            child: Text(
++              allUnits.isEmpty
++                  ? 'No vehicles returned for this hospital.'
++                  : 'No vehicles match this status filter.',
++            ),
++          )
++        else
++          for (final unit in visibleUnits)
++            FleetLiveUnitCard(
++              key: ValueKey('fleet-unit-${unit['unit_id']}'),
++              unit: unit,
++              onEdit: () => form(
++                'unit',
++                'Edit vehicle',
++                initial: unit,
++                extra: {'id': unit['unit_id']},
++              ),
++              onChangeReadiness: () => form(
++                'unit_status',
++                'Vehicle readiness',
++                extra: {
++                  'unit_id': unit['unit_id'],
++                  'unit_revision': unit['availability_revision'],
++                },
++                fields: [
++                  EmsField(
++                    'status',
++                    'Readiness',
++                    required: true,
++                    options: choices([
++                      'ready',
++                      'idle',
++                      'maintenance',
++                      'off_duty',
++                    ]),
++                  ),
++                  const EmsField(
++                    'reason',
++                    'Reason',
++                    required: true,
++                    max: 1000,
++                  ),
++                ],
++              ),
++            ),
++      ],
++    );
++  }
++
+   Widget _staff() =>
+       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+         button(
+@@ -544,10 +598,10 @@
+   Widget build(BuildContext context) {
+     final names = admin
+         ? [
+-            'Incidents',
+             'Vehicles',
+             'Personnel',
+             'Shifts & crews',
++            'Incidents',
+             'Receiving facilities',
+             'Fleet operations',
+             'Settings'
+@@ -558,10 +612,10 @@
+     if (tab >= names.length) tab = 0;
+     final pages = admin
+         ? [
+-            _incidents,
+             _units,
+             _staff,
+             _shifts,
++            _incidents,
+             _facilities,
+             _operations,
+             _settings
+--- /dev/null
++++ b/lib/pages/paramedic/fleet_live_unit_card.dart
+@@ -0,0 +1,184 @@
++import 'package:flutter/material.dart';
++
++import '../../services/paramedic_workspace_service.dart';
++
++/// Presentation only. Vehicle data comes from the authorised EMS workspace,
++/// never from the legacy sample FleetService.
++enum FleetUnitFilter {
++  all('All'),
++  available('Available'),
++  assigned('On dispatch'),
++  maintenance('Maintenance'),
++  offDuty('Off duty'),
++  other('Other');
++
++  const FleetUnitFilter(this.label);
++  final String label;
++}
++
++FleetUnitFilter classifyFleetUnit(EmsRow unit) {
++  if (unit['is_active'] == false) return FleetUnitFilter.other;
++  final status = '${unit['status'] ?? ''}'.trim().toLowerCase();
++  final readiness = '${unit['readiness_status'] ?? ''}'.trim().toLowerCase();
++  if (readiness == 'maintenance' || status == 'out of service') {
++    return FleetUnitFilter.maintenance;
++  }
++  if (readiness == 'off_duty') return FleetUnitFilter.offDuty;
++  if (status == 'assigned' ||
++      const {'en_route', 'on_scene', 'transporting'}.contains(readiness)) {
++    return FleetUnitFilter.assigned;
++  }
++  if (unit['is_active'] != false &&
++      status == 'available' &&
++      const {'ready', 'idle'}.contains(readiness)) {
++    return FleetUnitFilter.available;
++  }
++  return FleetUnitFilter.other;
++}
++
++class FleetLiveUnitCard extends StatelessWidget {
++  const FleetLiveUnitCard({
++    super.key,
++    required this.unit,
++    this.onEdit,
++    this.onChangeReadiness,
++  });
++
++  final EmsRow unit;
++  final VoidCallback? onEdit;
++  final VoidCallback? onChangeReadiness;
++
++  @override
++  Widget build(BuildContext context) {
++    final scheme = Theme.of(context).colorScheme;
++    final status = classifyFleetUnit(unit);
++    final statusColor = switch (status) {
++      FleetUnitFilter.available => const Color(0xFF16A76A),
++      FleetUnitFilter.assigned => const Color(0xFF13B7D9),
++      FleetUnitFilter.maintenance => const Color(0xFFFFAD27),
++      FleetUnitFilter.offDuty => scheme.error,
++      FleetUnitFilter.other || FleetUnitFilter.all => scheme.outline,
++    };
++    final number = _display(unit['unit_number'], 'Unnumbered vehicle');
++    final registration = _display(unit['registration_number'], 'No registration');
++    final type = _display(unit['vehicle_type'], 'Vehicle type unknown');
++    final availability = _display(unit['status'], 'Status not recorded');
++    final readiness = _display(unit['readiness_status'], 'Not recorded')
++        .replaceAll('_', ' ');
++    final capability = _display(unit['response_capability'], '');
++    final baseLocation = _display(unit['base_location'], '');
++
++    return Card(
++      margin: const EdgeInsets.only(bottom: 12),
++      elevation: 0,
++      shape: RoundedRectangleBorder(
++        borderRadius: BorderRadius.circular(16),
++        side: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.45)),
++      ),
++      child: Padding(
++        padding: const EdgeInsets.all(16),
++        child: Column(
++          crossAxisAlignment: CrossAxisAlignment.start,
++          children: [
++            Row(
++              crossAxisAlignment: CrossAxisAlignment.start,
++              children: [
++                CircleAvatar(
++                  radius: 25,
++                  backgroundColor: statusColor.withValues(alpha: 0.15),
++                  child: Icon(Icons.airport_shuttle_rounded, color: statusColor),
++                ),
++                const SizedBox(width: 14),
++                Expanded(
++                  child: Column(
++                    crossAxisAlignment: CrossAxisAlignment.start,
++                    children: [
++                      Text(number, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
++                      const SizedBox(height: 4),
++                      Text('$type • $registration', style: Theme.of(context).textTheme.bodySmall),
++                    ],
++                  ),
++                ),
++                const SizedBox(width: 8),
++                _StatusPill(text: status.label, color: statusColor),
++              ],
++            ),
++            const SizedBox(height: 14),
++            Wrap(
++              spacing: 14,
++              runSpacing: 8,
++              children: [
++                _Fact(icon: Icons.fact_check_outlined, label: 'Readiness: $readiness'),
++                _Fact(icon: Icons.local_shipping_outlined, label: 'Backend status: $availability'),
++                if (capability.isNotEmpty)
++                  _Fact(icon: Icons.medical_services_outlined, label: 'Capability: $capability'),
++                if (baseLocation.isNotEmpty)
++                  _Fact(icon: Icons.location_on_outlined, label: baseLocation),
++                if (unit['is_active'] == false)
++                  const _Fact(icon: Icons.block_outlined, label: 'Inactive record'),
++              ],
++            ),
++            const SizedBox(height: 12),
++            Divider(color: scheme.outlineVariant.withValues(alpha: 0.4)),
++            Wrap(
++              spacing: 8,
++              runSpacing: 8,
++              children: [
++                TextButton.icon(
++                  onPressed: onEdit,
++                  icon: const Icon(Icons.edit_outlined, size: 18),
++                  label: const Text('Edit details'),
++                ),
++                OutlinedButton.icon(
++                  onPressed: onChangeReadiness,
++                  icon: const Icon(Icons.tune_rounded, size: 18),
++                  label: const Text('Change readiness'),
++                ),
++              ],
++            ),
++          ],
++        ),
++      ),
++    );
++  }
++}
++
++String _display(Object? value, String fallback) {
++  final text = value?.toString().trim() ?? '';
++  return text.isEmpty || text.toLowerCase() == 'null' ? fallback : text;
++}
++
++class _StatusPill extends StatelessWidget {
++  const _StatusPill({required this.text, required this.color});
++  final String text;
++  final Color color;
++
++  @override
++  Widget build(BuildContext context) => Container(
++    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
++    decoration: BoxDecoration(
++      color: color.withValues(alpha: 0.14),
++      borderRadius: BorderRadius.circular(20),
++    ),
++    child: Text(
++      text,
++      style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w700),
++    ),
++  );
++}
++
++class _Fact extends StatelessWidget {
++  const _Fact({required this.icon, required this.label});
++  final IconData icon;
++  final String label;
++
++  @override
++  Widget build(BuildContext context) => Row(
++    mainAxisSize: MainAxisSize.min,
++    children: [
++      Icon(icon, size: 15, color: Theme.of(context).colorScheme.onSurfaceVariant),
++      const SizedBox(width: 5),
++      Text(label, style: Theme.of(context).textTheme.bodySmall),
++    ],
++  );
++}
+--- /dev/null
++++ b/test/fleet_live_unit_card_test.dart
+@@ -0,0 +1,54 @@
++import 'package:flutter/material.dart';
++import 'package:flutter_test/flutter_test.dart';
++import 'package:mycorvia/pages/paramedic/fleet_live_unit_card.dart';
++
++void main() {
++  test('classifies backend readiness without treating every unit as ready', () {
++    expect(classifyFleetUnit({'status': 'Available', 'readiness_status': 'ready'}),
++        FleetUnitFilter.available);
++    expect(classifyFleetUnit({'status': 'Assigned', 'readiness_status': 'en_route'}),
++        FleetUnitFilter.assigned);
++    expect(classifyFleetUnit({'status': 'Out of Service', 'readiness_status': 'maintenance'}),
++        FleetUnitFilter.maintenance);
++    expect(classifyFleetUnit({'status': 'Available', 'readiness_status': 'off_duty'}),
++        FleetUnitFilter.offDuty);
++    expect(classifyFleetUnit({'status': 'Available'}), FleetUnitFilter.other);
++    expect(classifyFleetUnit({'status': 'Available', 'readiness_status': 'ready', 'is_active': false}),
++        FleetUnitFilter.other);
++  });
++
++  testWidgets('shows authorised real Fleet fields, not sample fuel or driver', (tester) async {
++    var edits = 0;
++    var readinessChanges = 0;
++    await tester.pumpWidget(MaterialApp(
++      home: Scaffold(
++        body: SingleChildScrollView(
++          child: FleetLiveUnitCard(
++            unit: const {
++              'unit_id': 7,
++              'unit_number': 'COR-EMS-7',
++              'registration_number': 'TEST-007',
++              'vehicle_type': 'Ambulance',
++              'status': 'Available',
++              'readiness_status': 'idle',
++              'response_capability': 'BLS',
++              'base_location': 'Depot 1',
++            },
++            onEdit: () => edits++,
++            onChangeReadiness: () => readinessChanges++,
++          ),
++        ),
++      ),
++    ));
++    expect(find.text('COR-EMS-7'), findsOneWidget);
++    expect(find.text('Ambulance • TEST-007'), findsOneWidget);
++    expect(find.text('Readiness: idle'), findsOneWidget);
++    expect(find.text('Capability: BLS'), findsOneWidget);
++    expect(find.textContaining('Fuel:'), findsNothing);
++    await tester.tap(find.text('Edit details'));
++    await tester.tap(find.text('Change readiness'));
++    expect(edits, 1);
++    expect(readinessChanges, 1);
++    expect(tester.takeException(), isNull);
++  });
++}
